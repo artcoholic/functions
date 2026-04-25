@@ -727,10 +727,16 @@ function updateYear() {
       if (!lensAnimFrame) lensAnimFrame = requestAnimationFrame(loop);
     });
 
-    window.addEventListener('resize', () => {
-      if (!s.isActive) centerLens(true);
-      updC(sp.x.value, sp.y.value);
-    });
+    if (window.lensResizeHandler) {
+		window.removeEventListener('resize', window.lensResizeHandler);
+	}
+	
+	window.lensResizeHandler = () => {
+		if (!s.isActive) centerLens(true);
+		updC(sp.x.value, sp.y.value);
+	};
+	
+	window.addEventListener('resize', window.lensResizeHandler);
 
     centerLens(true);
     if (!lensAnimFrame) lensAnimFrame = requestAnimationFrame(loop);
