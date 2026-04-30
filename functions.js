@@ -211,33 +211,24 @@ function updateYear() {
 				});
 				
 				if (wrapper) {
-					// Grab the menu height
-					const menuHeight = tabMenu ? tabMenu.offsetHeight : 0;
-					// Calculate the max
-					const finalHeight = Math.max(maxHeight, menuHeight);
-					wrapper.style.height = `${finalHeight}px`;
+					// NEW LOGIC: Compare tabMenu height against the panels' maxHeight
+					if (tabMenu && tabMenu.offsetHeight > maxHeight) {
+						wrapper.style.height = '100%';
+					} else {
+						wrapper.style.height = `${maxHeight}px`;
+					}
 				}
 			};
 	
+			setMaxHeight();
 			const totalStr = String(buttons.length).padStart(2, '0');
 			if (counterElement) counterElement.textContent = `01/${totalStr}`;
-			
-			if (!container.querySelector('.tab-button.active') && buttons.length) {
-				buttons[0].classList.add('active');
-				const firstTarget = document.querySelector(buttons[0].dataset.target);
-				if (firstTarget) firstTarget.classList.add('active');
-			}
-	
 			if (!tabMenu) return;
 	
-			// ROBUST FIX: Watch the tab menu for ANY size changes (like custom fonts loading or Webflow layout rendering)
-			const observer = new ResizeObserver(() => {
-				setMaxHeight();
-			});
-			observer.observe(tabMenu);
-	
-			// Fallback for immediate render
-			setMaxHeight();
+			if (!container.querySelector('.tab-button.active') && buttons.length) {
+				buttons[0].classList.add('active');
+				document.querySelector(buttons[0].dataset.target)?.classList.add('active');
+			}
 	
 			buttons.forEach((button, index) => {
 				button.onclick = () => {
