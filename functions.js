@@ -208,7 +208,14 @@ function updateYear() {
           p.style.height = 'auto';
           if (p.scrollHeight > maxHeight) maxHeight = p.scrollHeight;
         });
-        if (wrapper) wrapper.style.height = `${maxHeight}px`;
+        if (wrapper) {
+			// NEW LOGIC: Compare tabMenu height against the panels' maxHeight
+			if (tabMenu && tabMenu.offsetHeight > maxHeight) {
+				wrapper.style.height = '100%';
+			} else {
+				wrapper.style.height = `${maxHeight}px`;
+			}
+		}
       };
       setMaxHeight();
       const totalStr = String(buttons.length).padStart(2, '0');
