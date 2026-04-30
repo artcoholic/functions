@@ -211,10 +211,9 @@ function updateYear() {
 				});
 				
 				if (wrapper) {
-					// Grab the menu height (default to 0 if it doesn't exist)
+					// Grab the menu height
 					const menuHeight = tabMenu ? tabMenu.offsetHeight : 0;
-					
-					// Set the wrapper to whichever number is higher in pixels!
+					// Calculate the max
 					const finalHeight = Math.max(maxHeight, menuHeight);
 					wrapper.style.height = `${finalHeight}px`;
 				}
@@ -223,19 +222,22 @@ function updateYear() {
 			const totalStr = String(buttons.length).padStart(2, '0');
 			if (counterElement) counterElement.textContent = `01/${totalStr}`;
 			
-			// 1. Assign the active classes FIRST before calculating heights
 			if (!container.querySelector('.tab-button.active') && buttons.length) {
 				buttons[0].classList.add('active');
-				document.querySelector(buttons[0].dataset.target)?.classList.add('active');
+				const firstTarget = document.querySelector(buttons[0].dataset.target);
+				if (firstTarget) firstTarget.classList.add('active');
 			}
 	
 			if (!tabMenu) return;
 	
-			// 2. Wrap the height calculation in a slight delay. 
-			// This gives the browser time to paint the CSS and ensures tabMenu.offsetHeight is an actual number, not 0!
-			setTimeout(() => {
+			// ROBUST FIX: Watch the tab menu for ANY size changes (like custom fonts loading or Webflow layout rendering)
+			const observer = new ResizeObserver(() => {
 				setMaxHeight();
-			}, 500);
+			});
+			observer.observe(tabMenu);
+	
+			// Fallback for immediate render
+			setMaxHeight();
 	
 			buttons.forEach((button, index) => {
 				button.onclick = () => {
@@ -261,7 +263,7 @@ function updateYear() {
 				}
 			};
 		});
-  }
+	}
 
   function initSlider() {
     document.querySelectorAll('.slide').forEach((instance) => {
