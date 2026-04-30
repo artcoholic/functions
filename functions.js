@@ -234,7 +234,7 @@ function updateYear() {
 		// This gives the browser time to paint the CSS and ensures tabMenu.offsetHeight is an actual number, not 0!
 		setTimeout(() => {
 			setMaxHeight();
-		}, 100);
+		}, 500);
 
 		buttons.forEach((button, index) => {
 			button.onclick = () => {
@@ -260,7 +260,7 @@ function updateYear() {
 			}
 		};
 	});
-}
+  }
 
   function initSlider() {
     document.querySelectorAll('.slide').forEach((instance) => {
