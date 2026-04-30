@@ -196,70 +196,71 @@ function updateYear() {
   }
 
   function initTabsVertical() {
-	document.querySelectorAll('.tabs-vertical').forEach((container) => {
-		const buttons = container.querySelectorAll('.tab-button');
-		const tabMenu = container.querySelector('.tab-menu-v');
-		const counterElement = container.querySelector('.tab-counter');
-		const panels = container.querySelectorAll('.tab-panel');
-		const wrapper = container.querySelector('.tab-panel-slot-v');
-
-		const setMaxHeight = () => {
-			let maxHeight = 0;
-			panels.forEach((p) => {
-				p.style.height = 'auto';
-				if (p.scrollHeight > maxHeight) maxHeight = p.scrollHeight;
-			});
+		document.querySelectorAll('.tabs-vertical').forEach((container) => {
+			const buttons = container.querySelectorAll('.tab-button');
+			const tabMenu = container.querySelector('.tab-menu-v');
+			const counterElement = container.querySelector('.tab-counter');
+			const panels = container.querySelectorAll('.tab-panel');
+			const wrapper = container.querySelector('.tab-panel-slot-v');
+	
+			const setMaxHeight = () => {
+				let maxHeight = 0;
+				panels.forEach((p) => {
+					p.style.height = 'auto';
+					if (p.scrollHeight > maxHeight) maxHeight = p.scrollHeight;
+				});
+				
+				if (wrapper) {
+					// Grab the menu height (default to 0 if it doesn't exist)
+					const menuHeight = tabMenu ? tabMenu.offsetHeight : 0;
+					
+					// Set the wrapper to whichever number is higher in pixels!
+					const finalHeight = Math.max(maxHeight, menuHeight);
+					wrapper.style.height = `${finalHeight}px`;
+				}
+			};
+	
+			const totalStr = String(buttons.length).padStart(2, '0');
+			if (counterElement) counterElement.textContent = `01/${totalStr}`;
 			
-			if (wrapper) {
-				if (tabMenu && tabMenu.offsetHeight > maxHeight) {
-					wrapper.style.height = '100%';
-				} else {
-					wrapper.style.height = `${maxHeight}px`;
-				}
+			// 1. Assign the active classes FIRST before calculating heights
+			if (!container.querySelector('.tab-button.active') && buttons.length) {
+				buttons[0].classList.add('active');
+				document.querySelector(buttons[0].dataset.target)?.classList.add('active');
 			}
-		};
-
-		const totalStr = String(buttons.length).padStart(2, '0');
-		if (counterElement) counterElement.textContent = `01/${totalStr}`;
-		
-		// 1. Assign the active classes FIRST before calculating heights
-		if (!container.querySelector('.tab-button.active') && buttons.length) {
-			buttons[0].classList.add('active');
-			document.querySelector(buttons[0].dataset.target)?.classList.add('active');
-		}
-
-		if (!tabMenu) return;
-
-		// 2. Wrap the height calculation in a slight delay. 
-		// This gives the browser time to paint the CSS and ensures tabMenu.offsetHeight is an actual number, not 0!
-		setTimeout(() => {
-			setMaxHeight();
-		}, 500);
-
-		buttons.forEach((button, index) => {
-			button.onclick = () => {
-				buttons.forEach((btn) => btn.classList.remove('active'));
-				button.classList.add('active');
-
-				if (counterElement) {
-					counterElement.textContent = `${String(index + 1).padStart(2, '0')}/${totalStr}`;
-				}
-
-				const target = document.querySelector(button.dataset.target);
-				if (target) {
-					panels.forEach((p) => p.classList.remove('active'));
-					target.classList.add('active');
+	
+			if (!tabMenu) return;
+	
+			// 2. Wrap the height calculation in a slight delay. 
+			// This gives the browser time to paint the CSS and ensures tabMenu.offsetHeight is an actual number, not 0!
+			setTimeout(() => {
+				setMaxHeight();
+			}, 500);
+	
+			buttons.forEach((button, index) => {
+				button.onclick = () => {
+					buttons.forEach((btn) => btn.classList.remove('active'));
+					button.classList.add('active');
+	
+					if (counterElement) {
+						counterElement.textContent = `${String(index + 1).padStart(2, '0')}/${totalStr}`;
+					}
+	
+					const target = document.querySelector(button.dataset.target);
+					if (target) {
+						panels.forEach((p) => p.classList.remove('active'));
+						target.classList.add('active');
+					}
+				};
+			});
+	
+			tabMenu.onclick = (e) => {
+				if (window.innerWidth <= 767) {
+					e.stopPropagation();
+					tabMenu.classList.toggle('is-open');
 				}
 			};
 		});
-
-		tabMenu.onclick = (e) => {
-			if (window.innerWidth <= 767) {
-				e.stopPropagation();
-				tabMenu.classList.toggle('is-open');
-			}
-		};
-	});
   }
 
   function initSlider() {
